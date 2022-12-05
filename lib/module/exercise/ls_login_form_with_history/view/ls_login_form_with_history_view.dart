@@ -23,6 +23,22 @@ class LsLoginFormWithHistoryView extends StatefulWidget {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
+              QTextField(
+                label: 'Email',
+                value: controller.email,
+                onChanged: (value) {
+                  controller.email = value;
+                  controller.saveToLocalStorage();
+                },
+              ),
+              QTextField(
+                label: 'Password',
+                value: controller.password,
+                onChanged: (value) {
+                  controller.password = value;
+                  controller.saveToLocalStorage();
+                },
+              ),
               /*
               1. Buat 2 textfield email dan password dengan property berikut
 

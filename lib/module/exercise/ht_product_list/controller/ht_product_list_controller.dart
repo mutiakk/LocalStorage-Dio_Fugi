@@ -61,8 +61,6 @@ class HtProductListController extends State<HtProductListView>
 
   List productList = [];
   loadProducts() async {
-    productList = [];
-    setState(() {});
 
     /*
     TODO: --
@@ -102,4 +100,5 @@ class HtProductListController extends State<HtProductListView>
     productList = obj["data"];
     setState(() {});
   }
+
 }

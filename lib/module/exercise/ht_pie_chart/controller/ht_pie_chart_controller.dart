@@ -33,11 +33,9 @@ class HtPieChartController extends State<HtPieChartView>
     TODO: --
     1. Buat sebuah get request menggunakan DIO
     ! snippet: dio_get
-
     @GET
     @URL
    "${AppConfig.baseUrl}/sales",
-
     2. Masukkan response data ke dalam salesDataList,
     gunakan looping seperti ini:
     ###
@@ -52,9 +50,29 @@ class HtPieChartController extends State<HtPieChartView>
       );
     }
     ###
-
     3. Panggil setState setelah-nya
     */
+
+    var response = await Dio().get(
+      "${AppConfig.baseUrl}/sales",
+      options: Options(
+        headers: {
+          "Content-Type": "application/json",
+        },
+      ),
+    );
+    Map obj = response.data;
+    List items = obj["data"];
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      salesDataList.add(
+        SalesData(
+          year: item["year"],
+          sales: item["sales"],
+        ),
+      );
+    }
+    setState(() {});
   }
 
   refresh({

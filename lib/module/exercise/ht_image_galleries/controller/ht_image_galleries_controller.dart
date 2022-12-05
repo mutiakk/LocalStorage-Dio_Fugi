@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:example/config.dart';
 import 'package:example/core.dart';
 import 'package:flutter/material.dart';
@@ -31,14 +33,11 @@ class HtImageGalleriesController extends State<HtImageGalleriesView>
     TODO: --
     1. Buat sebuah get request menggunakan DIO
     ! snippet: dio_get
-
     @GET
     @URL
     "${AppConfig.baseUrl}/image-galleries?limit=100",
-
     2. Masukkan response data ke dalam productList
     imageGalleries = obj["data"];
-
     3. Panggil setState setelah-nya
     */
 
@@ -113,49 +112,70 @@ class HtImageGalleriesController extends State<HtImageGalleriesView>
     /*
     7. Gunakan file picker yang support untuk semua platform
     !snippet: get_image_with_file_picker
-
     8. Nah, sekarang kamu sudah bisa mengambil gambar dengan
     file picker, Mari kita coba upload ke file hosting.
     Disini kita menggunakan IMGBB
     Bwt script Dio untuk upload file
     !snippet: dio_upload
-
     9. Nice, sekarang kamu sudah berhasil mengupload file dan
     mendapatkan url-nya!
-
     10. Tambahkan kita baris kode ini setelah-nya:
     ####
     await addImage(url);
     await loadImageGalleries();
     hideLoading();
     ####
-
     11. Klik tombol Upload 1
     (Cobalah di Platform Windows)
-
     12. Pilih file, dan lihatlah apakah gambar itu muncul
     Di dalam list, jika sudah muncul lanjut ke point 13
     */
+
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: [
+        "png",
+        "jpg",
+      ],
+      allowMultiple: false,
+    );
+    if (result == null) return;
+    File file = File(result.files.single.path!);
+    String filePath = file.path;
+
+    final formData = FormData.fromMap({
+      'image': MultipartFile.fromBytes(
+        File(filePath).readAsBytesSync(),
+        filename: "upload.jpg",
+      ),
+    });
+
+    var res = await Dio().post(
+      'https://api.imgbb.com/1/upload?key=b55ef3fd02b80ab180f284e479acd7c4',
+      data: formData,
+    );
+
+    var data = res.data["data"];
+    var url = data["url"];
+    await addImage(url);
+    await loadImageGalleries();
+    hideLoading();
   }
 
   doUploadAndroidIosAndWeb() async {
     showLoading();
     /*
     13. Ambil gambar dari gallery, gunakan snippet
-    ! snippet: get_image_gallery 
-
+    ! snippet: get_image_gallery
     14. Nah, sekarang kamu sudah bisa mengambil gambar dengan
     image picker, Mari kita coba upload ke file hosting.
     Disini kita menggunakan IMGBB
     Bwt script Dio untuk upload file
     !snippet: dio_upload
-
     15. Oops, filePath mungkin saja null. Mari kita handle.
     setelah deklarasi String? filePath;
-
     String? filePath = image?.path;
     if(filePath == null) return;
-
     16. Tambahkan kita baris kode ini setelah kamu mengupload
     file ke imgbb
     ####
@@ -163,7 +183,6 @@ class HtImageGalleriesController extends State<HtImageGalleriesView>
     await loadImageGalleries();
     hideLoading();
     ####
-
     17. Klik tombol Upload 2, pilih sebuah file
     18. Jika file yang kamu pilih berhasil di upload,
     Tasks ini selesai!
@@ -171,5 +190,29 @@ class HtImageGalleriesController extends State<HtImageGalleriesView>
     file picker dan image picker, dan mengupload-nya ke
     file hosting!
     */
+
+    XFile? image = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 40,
+    );
+    String? filePath = image?.path;
+    if (filePath == null) return;
+    final formData = FormData.fromMap({
+      'image': MultipartFile.fromBytes(
+        File(filePath).readAsBytesSync(),
+        filename: "upload.jpg",
+      ),
+    });
+
+    var res = await Dio().post(
+      'https://api.imgbb.com/1/upload?key=b55ef3fd02b80ab180f284e479acd7c4',
+      data: formData,
+    );
+
+    var data = res.data["data"];
+    var url = data["url"];
+    await addImage(url);
+    await loadImageGalleries();
+    hideLoading();
   }
 }

@@ -2,6 +2,7 @@ import 'package:example/core.dart';
 import 'package:faker_dart/faker_dart.dart';
 import 'package:flutter/material.dart';
 
+
 class LsPosController extends State<LsPosView> implements MvcController {
   static late LsPosController instance;
   late LsPosView view;
@@ -30,13 +31,14 @@ class LsPosController extends State<LsPosView> implements MvcController {
     ###
     productList = mainStorage.get("products") ?? [];
     ###
-
     2. Panggil setState setelah-nya!
-
     3. Tutup View-nya dan kembali lagi, Apakah kamu punya beberapa product?
     Jika belum tambahkan di ProductCRUD (tasks sebelumnya)
     Cukup tambahkan 5 saja
     */
+    productList = mainStorage.get("products") ?? [];
+    print(productList);
+    setState(() {});
   }
 
   increaseQty(item) {
@@ -48,6 +50,8 @@ class LsPosController extends State<LsPosView> implements MvcController {
     setState(() {});
     ###
     */
+    item["qty"]++;
+    setState(() {});
   }
 
   decreaseQty(item) {
@@ -60,6 +64,8 @@ class LsPosController extends State<LsPosView> implements MvcController {
     setState(() {});
     ###
     */
+    item["qty"]--;
+    setState(() {});
   }
 
   double get total {
@@ -74,6 +80,12 @@ class LsPosController extends State<LsPosView> implements MvcController {
     }
     ###
     */
+
+    for (var i = 0; i < productList.length; i++) {
+      var product = productList[i];
+      product["qty"] = product["qty"] ?? 0;
+      itemTotal += product["qty"] * product["price"];
+    }
     return itemTotal;
   }
 
@@ -99,21 +111,28 @@ class LsPosController extends State<LsPosView> implements MvcController {
       "items": productList,
     };
     ###
-
     8. Nice, selanjutnya kita akan menambahkan order-nya
-    ke dalam orders storage. 
+    ke dalam orders storage.
     Gunakan kode ini:
     ###
     List orders = await mainStorage.get("orders") ?? [];
     orders.add(order);
     mainStorage.put("orders", orders);
     ###
-
     9. Silahkan test, tekan tombol plus beberapa kali untuk beberapa item
     Lalu klik checkout, jika alert Your Order is Complete muncul,
     Maka task kamu sudah selesai!
     */
-
+    Map order = {
+      "created_at": DateTime.now(),
+      "customer": "-",
+      "payment_method": "Cash",
+      "total": total,
+      "items": productList,
+    };
+    List orders = await mainStorage.get("orders") ?? [];
+    orders.add(order);
+    mainStorage.put("orders", orders);
     emptyCart();
     await showInfoDialog("Your order is complete!");
     Get.back();

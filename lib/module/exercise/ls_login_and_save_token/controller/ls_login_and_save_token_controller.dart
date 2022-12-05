@@ -87,7 +87,7 @@ class LsLoginAndSaveTokenController extends State<LsLoginAndSaveTokenView>
     Map obj = response.data;
     AppSession.token = obj["data"]["token"];
     mainStorage.put("token", AppSession.token);
-
+    AppSession.token = await mainStorage.get("token");
     hideLoading();
     print(AppSession.token);
     if (AppSession.token.isNotEmpty) {

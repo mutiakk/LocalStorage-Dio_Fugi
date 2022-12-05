@@ -21,6 +21,26 @@ class LsLoginByPinController extends State<LsLoginByPinView>
   String pin = "";
 
   updatePin(int number) async {
+    if (pin.length >= 4) return;
+
+    pin += number.toString();
+    setState(() {});
+
+    if (pin.length < 4) return;
+    String currentPin = await mainStorage.get("pin") ?? "";
+    if (pin != currentPin) {
+      showInfoDialog("Pin Salah!");
+      return;
+    }else{
+      await showInfoDialog("Berhasil Login!");
+      Get.back();
+    }
+
+    if (pin.length >= 4) return;
+    pin += number.toString();
+    setState(() {});
+
+
     /*
     TODO: --
     1. Buat if statement 
